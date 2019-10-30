@@ -23,6 +23,9 @@ Simply open **TSplitter.ahk** to run the program.
 You need to fill the keybinds used by both AutoSplit and LiveSplit. As well as setting the path to the folder containing the images used by AutoSplit.
 Not that every time you change something you need to press the Reload button for the changes to take effect.
 
+The main difference when using this tool is that **your AutoSplit and LiveSplit keybinds should be different**.
+When doing runs, **you should only use your AutoSplit keybinds**. The program will automatically forward them to LiveSplit when applicable.
+
 ## Examples
 In the Examples folder you can see two set of examples of split images configured for AutoSplit and also using the features of TSplitter.
 
