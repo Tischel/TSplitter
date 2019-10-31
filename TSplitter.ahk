@@ -1,6 +1,6 @@
 #SingleInstance force
 
-Version := "0.1.1"
+Version := "0.2.0"
 
 ; Read saved key binds
 IniRead, AutosplitSplit, TSplitter.ini, AutoSplit, Split
@@ -19,7 +19,7 @@ if (AutosplitFolder = "ERROR") {
 }
 
 ; GUI
-Gui, 1:New, +Resize +MinSize320x310 -MaximizeBox -MinimizeBox, TSplitter v%Version%
+Gui, 1:New, -Resize -MaximizeBox -MinimizeBox, TSplitter v%Version%
 
 Gui, 1:Font, bold
 Gui, 1:Add, GroupBox, x10 y5 w150 h130, AutoSplit Keybinds
@@ -60,9 +60,9 @@ Gui, 1:Add, GroupBox, x10 y195 w305 h50, Current split
 Gui, 1:Font, norm
 Gui, 1:Add, Text, x20 y220 w290 vRunStatusLabel, Run not started...
 
-Menu, SaveMenu, Add, &Save`tCtrl+S, ReloadScript
+Menu, FileMenu, Add, &Save`tCtrl+S, ReloadScript
 Menu, HelpMenu, Add, &About`tCtrl+A, ShowAbout
-Menu, MyMenuBar, Add, &File, :SaveMenu
+Menu, MyMenuBar, Add, &File, :FileMenu
 Menu, MyMenuBar, Add, &Help, :HelpMenu
 Gui, 1:Menu, MyMenuBar
 
@@ -230,7 +230,7 @@ ReloadScript:
   Return
 
 ShowAbout:
-  Gui, About:New, +Owner -Resize +MinSize100x100, About
+  Gui, About:New, +Owner -Resize, About
   Gui, About:Font, bold
   Gui, About:Add, Text,, TSplitter v%Version%
   Gui, About:Font, norm

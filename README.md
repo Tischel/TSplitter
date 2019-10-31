@@ -1,4 +1,4 @@
-# TSplitter v0.1.1
+# TSplitter v0.2.0
 A tool that adds some features to https://github.com/Toufool/Auto-Split used in conjuction with https://github.com/LiveSplit
 You need AutoHotkey to use this program (Download from https://www.autohotkey.com/)
 
@@ -17,6 +17,10 @@ This is useful when its not possible to have a good image for the precise moment
 
 To have a delayed split you just need to add "delayXXXX"  to the split image name used by AutoSplit; where XXXX is the amount of milliseconds the split should be delayed.
 
+### Split editor
+A simple tool to help you create AutoSplit images with the correct name formats and that it also includes the features added by TSplitter.
+
+
 ## Usage
 Simply open **TSplitter.ahk** to run the program.
 
@@ -33,3 +37,9 @@ In the Examples folder you can see two set of examples of split images configure
 - Launch AutoSplit and LiveSplit before running the program
 - Having the same keybinds in AutoSplit and LiveSplit might cause issues. This program expects the keybinds to be different (which conflicts with the "normal" usage of AutoSplit)
 - For issues configuring images for AutoSplit please refer to https://github.com/Toufool/Auto-Split
+
+
+## TSplitter Editor
+This tool provides an user friendly interface to create the final split images used by AutoSplit. However, it is not necessary to use this tool  since everything it does can be achieved by manually editing the images names.
+
+Using this tool guarantees a proper format for AutoSplit and it also supports the features added by TSplitter like fake or delayed splits.
