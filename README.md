@@ -21,7 +21,7 @@ To have a delayed split you just need to add "delayXXXX"  to the split image nam
 Simply open **TSplitter.ahk** to run the program.
 
 You need to fill the keybinds used by both AutoSplit and LiveSplit. As well as setting the path to the folder containing the images used by AutoSplit.
-Not that every time you change something you need to press the Reload button for the changes to take effect.
+Not that every time you change something you need to save for the changes to take effect. You can do so by using the **File > Save** menu, or by pressing **Ctrl + S**.
 
 The main difference when using this tool is that **your AutoSplit and LiveSplit keybinds should be different**.
 When doing runs, **you should only use your AutoSplit keybinds**. The program will automatically forward them to LiveSplit when applicable.

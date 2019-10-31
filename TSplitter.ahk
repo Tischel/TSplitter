@@ -1,6 +1,6 @@
 #SingleInstance force
 
-Version := "0.1.0"
+Version := "0.1.1"
 
 ; Read saved key binds
 IniRead, AutosplitSplit, TSplitter.ini, AutoSplit, Split
@@ -14,57 +14,73 @@ IniRead, LivesplitReset, TSplitter.ini, LiveSplit, Reset
 IniRead, LivesplitUndo, TSplitter.ini, LiveSplit, Undo
 IniRead, LivesplitSkip, TSplitter.ini, LiveSplit, Skip
 
+if (AutosplitFolder = "ERROR") {
+  AutosplitFolder = 
+}
+
 ; GUI
-Gui, New, +Resize +MinSize300x200 -MaximizeBox -MinimizeBox, TSplitter v%Version%
+Gui, 1:New, +Resize +MinSize320x310 -MaximizeBox -MinimizeBox, TSplitter v%Version%
 
-Gui, Font, bold
-Gui, Add, Text,, AutoSplit Keybinds
+Gui, 1:Font, bold
+Gui, 1:Add, GroupBox, x10 y5 w150 h130, AutoSplit Keybinds
 
-Gui, Font, norm
-Gui, Add, Text,, Split/Start
-Gui, Add, Text,, Reset
-Gui, Add, Text,, Undo
-Gui, Add, Text,, Skip
-Gui, Add, Hotkey, x70 y30 w70 vAutosplitSplitHotkey, %AutosplitSplit%
-Gui, Add, Hotkey, w70 vAutosplitResetHotkey, %AutosplitReset%
-Gui, Add, Hotkey, w70 vAutosplitUndoHotkey, %AutosplitUndo%
-Gui, Add, Hotkey, w70 vAutosplitSkipHotkey, %AutosplitSkip%
+Gui, 1:Font, norm
+Gui, 1:Add, Text, x20 y29, Split/Start
+Gui, 1:Add, Text, , Reset
+Gui, 1:Add, Text, , Undo
+Gui, 1:Add, Text, , Skip
+Gui, 1:Add, Hotkey, x80 y25 w70 vAutosplitSplitHotkey, %AutosplitSplit%
+Gui, 1:Add, Hotkey, w70 vAutosplitResetHotkey, %AutosplitReset%
+Gui, 1:Add, Hotkey, w70 vAutosplitUndoHotkey, %AutosplitUndo%
+Gui, 1:Add, Hotkey, w70 vAutosplitSkipHotkey, %AutosplitSkip%
 
-Gui, Font, bold
-Gui, Add, Text, x150 y6, LiveSplit Keybinds
+Gui, 1:Font, bold
+Gui, 1:Add, GroupBox, x165 y5 w150 h130, LiveSplit Keybinds
 
-Gui, Font, norm
-Gui, Add, Text,, Split/Start
-Gui, Add, Text,, Reset
-Gui, Add, Text,, Undo
-Gui, Add, Text,, Skip
-Gui, Add, Hotkey, x220 y30 w70 vLivesplitSplitHotkey, %LivesplitSplit%
-Gui, Add, Hotkey, w70 vLivesplitResetHotkey, %LivesplitReset%
-Gui, Add, Hotkey, w70 vLivesplitUndoHotkey, %LivesplitUndo%
-Gui, Add, Hotkey, w70 vLivesplitSkipHotkey, %LivesplitSkip%
+Gui, 1:Font, norm
+Gui, 1:Add, Text, x175 y29, Split/Start
+Gui, 1:Add, Text, , Reset
+Gui, 1:Add, Text, , Undo
+Gui, 1:Add, Text, , Skip
+Gui, 1:Add, Hotkey, x235 y25 w70 vLivesplitSplitHotkey, %LivesplitSplit%
+Gui, 1:Add, Hotkey, w70 vLivesplitResetHotkey, %LivesplitReset%
+Gui, 1:Add, Hotkey, w70 vLivesplitUndoHotkey, %LivesplitUndo%
+Gui, 1:Add, Hotkey, w70 vLivesplitSkipHotkey, %LivesplitSkip%
 
-Gui, Font, bold
-Gui, Add, Text, x10, AutoSplit images folder
+Gui, 1:Font, bold
+Gui, 1:Add, GroupBox, x10 y140 w305 h50, AutoSplit images folder
 
-Gui, Font, norm
-Gui, Add, Edit, w280 vAutosplitFolderTextfield, %AutosplitFolder%
+Gui, 1:Font, norm
+Gui, 1:Add, Edit, x20 y160 w261 vAutosplitFolderTextfield, %AutosplitFolder%
+Gui, 1:Add, Button, x+-1 y159 w30 h23 gSelectFolder, ...
 
-Gui, Add, Button, Default x10 y+10 w280 h30 gReloadScript, Reload
-Gui, Show
+Gui, 1:Font, bold
+Gui, 1:Add, GroupBox, x10 y195 w305 h50, Current split
 
-ControlFocus, Reload, TSplitter v%Version%
+Gui, 1:Font, norm
+Gui, 1:Add, Text, x20 y220 w290 vRunStatusLabel, Run not started...
+
+Menu, SaveMenu, Add, &Save`tCtrl+S, ReloadScript
+Menu, HelpMenu, Add, &About`tCtrl+A, ShowAbout
+Menu, MyMenuBar, Add, &File, :SaveMenu
+Menu, MyMenuBar, Add, &Help, :HelpMenu
+Gui, 1:Menu, MyMenuBar
+
+Gui, 1:Show
+
+ControlFocus, ..., TSplitter v%Version%
 
 ; Set keybinds
-if AutosplitSplit {
+if (AutosplitSplit != "ERROR" and AutosplitSplit != "") {
   Hotkey, %AutosplitSplit%, Split
 }
-if AutosplitReset {
+if (AutosplitReset != "ERROR" and AutosplitReset != "") {
   Hotkey, %AutosplitReset%, Reset
 }
-if AutosplitUndo {
+if (AutosplitUndo != "ERROR" and AutosplitUndo != "") {
   Hotkey, %AutosplitUndo%, Undo
 }
-if AutosplitSkip {
+if (AutosplitSkip != "ERROR" and AutosplitSkip != "") {
   Hotkey, %AutosplitSkip%, Skip
 }
 
@@ -77,9 +93,14 @@ splitFlags.Push(1)
 splitDelays := []
 splitDelays.Push(0)
 
+splitNames := []
+splitNames.Push("Dummy")
+
 IfExist, %AutosplitFolder%
   Loop %AutosplitFolder%\*.*
   {
+    splitNames.Push(A_LoopFileName)
+
     IfInString, A_LoopFileName, fake
     {
       splitFlags.Push(0)
@@ -101,10 +122,6 @@ IfExist, %AutosplitFolder%
   }
 Return
 
-SC029::
-  Send {%AutosplitReset%}
-return
-
 Split:
   delay := splitDelays[splitIndex]
   Sleep, %delay%
@@ -113,12 +130,20 @@ Split:
     Send {%LivesplitSplit%}
   }
 
-  splitIndex := splitIndex + 1 
+  splitIndex := splitIndex + 1
+
+  if (splitIndex > splitFlags.MaxIndex()) {
+    splitIndex := 1
+  }
+
+  UpdateRunStatus(splitIndex, splitNames)
 return
 
 Reset:
   Send {%LivesplitReset%}
   splitIndex := 1
+
+  UpdateRunStatus(splitIndex, splitNames)
 return
 
 Undo:
@@ -133,6 +158,8 @@ Undo:
   }
 
   Send {%LivesplitUndo%}
+
+  UpdateRunStatus(splitIndex, splitNames)
 return
 
 Skip:
@@ -147,7 +174,21 @@ Skip:
   }
 
   Send {%LivesplitSkip%}
+
+  UpdateRunStatus(splitIndex, splitNames)
 return
+
+UpdateRunStatus(index, names) {
+  if (index = 1)
+  {
+    GuiControl, 1:, RunStatusLabel, Run not started...
+  }
+  else
+  {
+    splitName := names[index]
+    GuiControl, 1:, RunStatusLabel, %splitName%
+  }
+}
 
 SaveKeybinds() {
   GuiControlGet, AutosplitSplitHotkey
@@ -178,9 +219,23 @@ SaveKeybinds() {
   IniWrite, %LiveSplitSkipHotkey%, TSplitter.ini, LiveSplit, Skip
 }
 
+SelectFolder:
+  FileSelectFolder, AutosplitFolder, *%AutosplitFolder%, 0, Select AutoSplit images folder
+  GuiControl, , AutosplitFolderTextfield, %AutosplitFolder%
+  Return
+
 ReloadScript:
   SaveKeybinds()
   Reload
+  Return
+
+ShowAbout:
+  Gui, About:New, +Owner -Resize +MinSize100x100, About
+  Gui, About:Font, bold
+  Gui, About:Add, Text,, TSplitter v%Version%
+  Gui, About:Font, norm
+  Gui, About:Add, Link,, Check latest releases and documentation at`n<a href="https://github.com/Tischel/TSplitter">https://github.com/Tischel/TSplitter</a>
+  Gui, About:Show
   Return
 
 GuiClose:
