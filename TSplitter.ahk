@@ -70,6 +70,8 @@ Gui, 1:Show
 
 ControlFocus, ..., TSplitter v%Version%
 
+OnMessage(0x201, "WM_LBUTTONDOWN")
+
 ; Set keybinds
 if (AutosplitSplit != "ERROR" and AutosplitSplit != "") {
   Hotkey, %AutosplitSplit%, Split
@@ -241,3 +243,7 @@ ShowAbout:
 GuiClose:
   SaveKeybinds()
   ExitApp
+
+WM_LBUTTONDOWN() {
+  DllCall("SetFocus", "Ptr", 0)
+}
