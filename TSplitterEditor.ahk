@@ -4,6 +4,7 @@ Version := "0.2.0"
 SetFormat, float, 0.0
 
 ; Split window variables
+SplitImagePicture :=
 SplitImagePathTextfield :=
 SplitNameTextfield :=
 SplitProbabilityTextfield :=
@@ -321,32 +322,36 @@ ShowSplitWindow()
   }
 
   title := (SelectedSplitIndex > 0 ? "Edit split #"order : "New Split")
-  Gui, 2:New, +Owner -Resize, %title%
-  Gui, 2:Add, Text, y20, Image path:
-  Gui, 2:Add, Edit, x80 y5 w277 h40 vSplitImagePathTextfield, %imagePath%
-  Gui, 2:Add, Button, x+-1 y4 w30 h42 gSelectImage, ...
+  Gui, 2:New, +Owner +Resize, %title%
 
-  Gui, 2:Add, Text, x10 y54, Split name:
-  Gui, 2:Add, Edit, x80 y50 w305 vSplitNameTextfield, %name%
+  if (imagePath) {
+    Gui, 2:Add, Picture, x50 y10 w300 h-1 vSplitImagePicture, %imagePath%
+  }
+  Gui, 2:Add, Text, x10 y+20, Image path:
+  Gui, 2:Add, Edit, x80 y+-25 w277 h40 vSplitImagePathTextfield, %imagePath%
+  Gui, 2:Add, Button, x+-1 y+-41 w30 h42 gSelectImage, ...
 
-  Gui, 2:Add, Text, x10 y85, Probability:
-  Gui, 2:Add, Edit, x70 y81 w50 vSplitProbabilityTextfield Limit3 Number, %probabillty%
+  Gui, 2:Add, Text, x10 y+10, Split name:
+  Gui, 2:Add, Edit, x80 y+-14 w305 vSplitNameTextfield, %name%
+
+  Gui, 2:Add, Text, x10 y+20, Probability:
+  Gui, 2:Add, Edit, x70 y+-15 w50 vSplitProbabilityTextfield Limit3 Number, %probabillty%
   Gui, 2:Add, UpDown, 0x80 Range1-100, %probabillty%
 
-  Gui, 2:Add, Text, x140 y85, Pause time:
-  Gui, 2:Add, Edit, x205 y81 w60 vSplitPauseTimeTextfield Limit4 Number, %pauseTime%
+  Gui, 2:Add, Text, x140 y+-19, Pause time:
+  Gui, 2:Add, Edit, x205 y+-15 w60 vSplitPauseTimeTextfield Limit4 Number, %pauseTime%
   Gui, 2:Add, UpDown, 0x80 Range0-9999, %pauseTime%
 
-  Gui, 2:Add, Text, x285 y85, Delay:
-  Gui, 2:Add, Edit, x325 y81 w60 vSplitDelayTextfield Limit5 Number, %delay%
+  Gui, 2:Add, Text, x285 y+-19, Delay:
+  Gui, 2:Add, Edit, x325 y+-15 w60 vSplitDelayTextfield Limit5 Number, %delay%
   Gui, 2:Add, UpDown, 0x80 Range0-99999, %delay%
 
-  Gui, 2:Add, CheckBox, x100 y115 vSplitMaskedCheck Checked%masked%, Masked image
-  Gui, 2:Add, CheckBox, x220 y115 vSplitFakeCheck Checked%fake%, Fake split
+  Gui, 2:Add, CheckBox, x100 y+20 vSplitMaskedCheck Checked%masked%, Masked image
+  Gui, 2:Add, CheckBox, x220 y+-12 vSplitFakeCheck Checked%fake%, Fake split
   
-  Gui, 2:Add, Button, x10 y150 w377 h30 gSaveEditedSplit, Save
+  Gui, 2:Add, Button, x10 y+30 w377 h30 gSaveEditedSplit, Save
 
-  Gui, 2:Show
+  Gui, 2:Show, AutoSize
 }
 
 ClearSplits()
@@ -361,6 +366,7 @@ SelectImage:
   GuiControlGet, imagePath, , SplitImagePathTextfield
   FileSelectFile, imagePath, ,%imagePath%, Select splt image, PNG Images (*.png)
   GuiControl, , SplitImagePathTextfield, %imagePath%
+  GuiControl, , SplitImagePicture, %imagePath%
 Return
 
 SaveEditedSplit:
