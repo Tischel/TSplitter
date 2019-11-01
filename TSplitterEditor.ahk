@@ -102,13 +102,15 @@ OpenSplits()
     {
       cleanFileName := StrReplace(splitFileName, ".png", "")
       components := StrSplit(cleanFileName, "_")
+      asd := components.MaxIndex()
 
-      splitName := split%i%
+
+      splitName = split%i%
       if (components.MaxIndex() > 1) {
         splitName := components[2]
       }
 
-      probabilty := 90
+      probability := 90
       pauseTime := 0
       delay := 0
       masked := "No"
@@ -122,6 +124,10 @@ OpenSplits()
           str := StrReplace(component, "(", "")
           str := StrReplace(str, ")", "")
           probability := str * 100.0
+
+          if (probability > 100) {
+            probability := 100
+          }
         }
 
         ; pause time
@@ -183,12 +189,16 @@ SaveSplits:
         finalName = %name%_fake
       }
       
-      finalProbability = 
+      finalProbability = _(0.90)
       if (probabillty != "0") {
-        finalProbability = _(%probabillty%)
+        if (probability = 100) {
+          finalProbability = _(1)
+        } else {
+          finalProbability = _(0.%probabillty%)
+        }
       }
 
-      finalPauseTime = 
+      finalPauseTime = _[0]
       if (pauseTime != "0") {
         finalPauseTime = _[%pauseTime%]
       }
@@ -385,16 +395,23 @@ SelectImage:
 Return
 
 EditPreviousSplit:
+  SaveSplit()
   SelectedSplitIndex := SelectedSplitIndex - 1
   ShowSplitWindow()
 Return
 
 EditNextSplit:
+  SaveSplit()
   SelectedSplitIndex := SelectedSplitIndex + 1
   ShowSplitWindow()
 Return
 
 SaveEditedSplit:
+  SaveSplit()
+Return
+
+SaveSplit()
+{
   ; validate name
   GuiControlGet, name, , SplitNameTextfield
   if (!name or name = "") {
@@ -438,8 +455,7 @@ SaveEditedSplit:
   {
     LV_Modify(SelectedSplitIndex, , SelectedSplitIndex, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
   }
-
-Return
+}
 
 ShowAbout:
   Gui, About:New, +Owner -Resize, About
