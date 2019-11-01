@@ -295,6 +295,9 @@ Swap(index1, index2)
 
 ShowSplitWindow()
 {
+  Gui, 2:Destroy
+  Gui, 1:Default
+
   order := 
   imagePath := 
   name := 
@@ -304,7 +307,9 @@ ShowSplitWindow()
   masked := false
   fake := false
 
-  if (SelectedSplitIndex > 0) 
+  rowCount := LV_GetCount()
+
+  if (SelectedSplitIndex > 0)
   {
     LV_GetText(order, SelectedSplitIndex, 1)
     LV_GetText(name, SelectedSplitIndex, 2)
@@ -349,7 +354,17 @@ ShowSplitWindow()
   Gui, 2:Add, CheckBox, x100 y+20 vSplitMaskedCheck Checked%masked%, Masked image
   Gui, 2:Add, CheckBox, x220 y+-12 vSplitFakeCheck Checked%fake%, Fake split
   
-  Gui, 2:Add, Button, x10 y+30 w377 h30 gSaveEditedSplit, Save
+  Gui, 2:Add, Button, x100 y+30 w200 h30 gSaveEditedSplit, Save
+
+  if (SelectedSplitIndex > 1)
+  {
+    Gui, 2:Add, Button, x10 y+-30 w30 h30 gEditPreviousSplit, <
+  }
+
+  if (SelectedSplitIndex > 0 and SelectedSplitIndex < rowCount)
+  {
+    Gui, 2:Add, Button, x355 y+-30 w30 h30 gEditNextSplit, >
+  }
 
   Gui, 2:Show, AutoSize
 }
@@ -369,50 +384,60 @@ SelectImage:
   GuiControl, , SplitImagePicture, %imagePath%
 Return
 
+EditPreviousSplit:
+  SelectedSplitIndex := SelectedSplitIndex - 1
+  ShowSplitWindow()
+Return
+
+EditNextSplit:
+  SelectedSplitIndex := SelectedSplitIndex + 1
+  ShowSplitWindow()
+Return
+
 SaveEditedSplit:
-; validate name
-GuiControlGet, name, , SplitNameTextfield
-if (!name or name = "") {
-  MsgBox, Invalid split name!
-  Return
-}
+  ; validate name
+  GuiControlGet, name, , SplitNameTextfield
+  if (!name or name = "") {
+    MsgBox, Invalid split name!
+    Return
+  }
 
-; validate path
-GuiControlGet, imagePath, , SplitImagePathTextfield
-IfNotExist, %imagePath%
-{
-  MsgBox, Couldn't find an image at "%imagePath%"!
-  Return
-}
+  ; validate path
+  GuiControlGet, imagePath, , SplitImagePathTextfield
+  IfNotExist, %imagePath%
+  {
+    MsgBox, Couldn't find an image at "%imagePath%"!
+    Return
+  }
 
-IfNotInString, imagePath, .png
-{
-  MsgBox, Only PNG images accepted!
-  Return
-}
+  IfNotInString, imagePath, .png
+  {
+    MsgBox, Only PNG images accepted!
+    Return
+  }
 
-; get values
-GuiControlGet, probabillty, , SplitProbabilityTextfield
-GuiControlGet, pauseTime, , SplitPauseTimeTextfield
-GuiControlGet, delay, , SplitDelayTextfield
-GuiControlGet, masked, , SplitMaskedCheck
-maskedText := (masked = 1 ? "Yes" : "No")
-GuiControlGet, fake, , SplitFakeCheck
-fakeText := (fake = 1 ? "Yes" : "No")
+  ; get values
+  GuiControlGet, probabillty, , SplitProbabilityTextfield
+  GuiControlGet, pauseTime, , SplitPauseTimeTextfield
+  GuiControlGet, delay, , SplitDelayTextfield
+  GuiControlGet, masked, , SplitMaskedCheck
+  maskedText := (masked = 1 ? "Yes" : "No")
+  GuiControlGet, fake, , SplitFakeCheck
+  fakeText := (fake = 1 ? "Yes" : "No")
 
-Gui, 2:Destroy
-Gui, 1:Default
+  Gui, 2:Destroy
+  Gui, 1:Default
 
-; save
-if (SelectedSplitIndex = -1)
-{
-  rowCount := LV_GetCount() + 1
-  LV_Add(, rowCount, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
-}
-else
-{
-  LV_Modify(SelectedSplitIndex, , SelectedSplitIndex, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
-}
+  ; save
+  if (SelectedSplitIndex = -1)
+  {
+    rowCount := LV_GetCount() + 1
+    LV_Add(, rowCount, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
+  }
+  else
+  {
+    LV_Modify(SelectedSplitIndex, , SelectedSplitIndex, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
+  }
 
 Return
 
