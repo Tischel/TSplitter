@@ -366,7 +366,7 @@ ShowSplitWindow()
     Gui, 2:Add, Button, x355 y+-30 w30 h30 gEditNextSplit, >
   }
 
-  Gui, 2:Show, AutoSize
+  Gui, 2:Show
 }
 
 ClearSplits()

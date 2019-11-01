@@ -29,10 +29,10 @@ Gui, 1:Add, Text, x20 y29, Split/Start
 Gui, 1:Add, Text, , Reset
 Gui, 1:Add, Text, , Undo
 Gui, 1:Add, Text, , Skip
-Gui, 1:Add, Hotkey, x80 y25 w70 vAutosplitSplitHotkey, %AutosplitSplit%
-Gui, 1:Add, Hotkey, w70 vAutosplitResetHotkey, %AutosplitReset%
-Gui, 1:Add, Hotkey, w70 vAutosplitUndoHotkey, %AutosplitUndo%
-Gui, 1:Add, Hotkey, w70 vAutosplitSkipHotkey, %AutosplitSkip%
+Gui, 1:Add, Hotkey, x80 y25 w70 vAutosplitSplitHotkey gOnChange, %AutosplitSplit%
+Gui, 1:Add, Hotkey, w70 vAutosplitResetHotkey gOnChange, %AutosplitReset%
+Gui, 1:Add, Hotkey, w70 vAutosplitUndoHotkey gOnChange, %AutosplitUndo%
+Gui, 1:Add, Hotkey, w70 vAutosplitSkipHotkey gOnChange, %AutosplitSkip%
 
 Gui, 1:Font, bold
 Gui, 1:Add, GroupBox, x165 y5 w150 h130, LiveSplit Keybinds
@@ -42,16 +42,16 @@ Gui, 1:Add, Text, x175 y29, Split/Start
 Gui, 1:Add, Text, , Reset
 Gui, 1:Add, Text, , Undo
 Gui, 1:Add, Text, , Skip
-Gui, 1:Add, Hotkey, x235 y25 w70 vLivesplitSplitHotkey, %LivesplitSplit%
-Gui, 1:Add, Hotkey, w70 vLivesplitResetHotkey, %LivesplitReset%
-Gui, 1:Add, Hotkey, w70 vLivesplitUndoHotkey, %LivesplitUndo%
-Gui, 1:Add, Hotkey, w70 vLivesplitSkipHotkey, %LivesplitSkip%
+Gui, 1:Add, Hotkey, x235 y25 w70 vLivesplitSplitHotkey gOnChange, %LivesplitSplit%
+Gui, 1:Add, Hotkey, w70 vLivesplitResetHotkey gOnChange, %LivesplitReset%
+Gui, 1:Add, Hotkey, w70 vLivesplitUndoHotkey gOnChange, %LivesplitUndo%
+Gui, 1:Add, Hotkey, w70 vLivesplitSkipHotkey gOnChange, %LivesplitSkip%
 
 Gui, 1:Font, bold
 Gui, 1:Add, GroupBox, x10 y140 w305 h50, AutoSplit images folder
 
 Gui, 1:Font, norm
-Gui, 1:Add, Edit, x20 y160 w261 vAutosplitFolderTextfield, %AutosplitFolder%
+Gui, 1:Add, Edit, x20 y160 w261 vAutosplitFolderTextfield gOnChange, %AutosplitFolder%
 Gui, 1:Add, Button, x+-1 y159 w30 h23 gSelectFolder, ...
 
 Gui, 1:Font, bold
@@ -68,8 +68,8 @@ Gui, 1:Menu, MyMenuBar
 
 Gui, 1:Show
 
+saveButtonAdded := false
 ControlFocus, ..., TSplitter v%Version%
-
 OnMessage(0x201, "WM_LBUTTONDOWN")
 
 ; Set keybinds
@@ -121,6 +121,12 @@ IfExist, %AutosplitFolder%
     {
       splitDelays.Push(0)
     }
+  }
+Return
+
+OnChange:
+  if (saveButtonAdded = false) {
+    Gui, 1:Add, Button, x10 y195 w305 h50 gReloadScript, Save
   }
 Return
 
