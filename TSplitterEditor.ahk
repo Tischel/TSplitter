@@ -17,8 +17,9 @@ Global SelectedSplitIndex := -1
 ; Main window
 Gui, 1:New, -Resize, TSplitter Editor v%Version%
 Gui, 1:Add, Button, w100 gAddSplit, Add split
-Gui, 1:Add, Button, w100 gEditSplit, Edit selected
-Gui, 1:Add, Button, w100 gRemoveSplit, Remove selected
+Gui, 1:Add, Button, w100 gEditSplit, Edit
+Gui, 1:Add, Button, w100 gDuplicateSplit, Duplicate
+Gui, 1:Add, Button, w100 gRemoveSplit, Remove
 Gui, 1:Add, Button, w100 gMoveUpSplit, Move up
 Gui, 1:Add, Button, w100 gMoveDownSplit, Move down
 Gui, 1:Add, ListView, x117 y7 r0 h400 w730 gSplitsListView -LV0x10 -Multi +ReadOnly +NoSort, #|Name|Probability|Pause time|Delay|Masked|Fake|Image
@@ -249,6 +250,13 @@ EditSplit:
   }
 Return
 
+DuplicateSplit:
+  SelectedSplitIndex := LV_GetNext()
+  if (SelectedSplitIndex > 0) {
+    CloneSplit(SelectedSplitIndex)
+  }
+Return
+
 RemoveSplit:
   SelectedSplitIndex := LV_GetNext()
   if (SelectedSplitIndex > 0) {
@@ -279,11 +287,27 @@ MoveDownSplit:
   LV_Modify(SelectedSplitIndex + 1, "Select")
 Return
 
+CloneSplit(index)
+{
+  order := LV_GetCount() + 1
+  LV_GetText(name, index, 2)
+  name = %name% Copy
+
+  LV_GetText(probability, index, 3)
+  LV_GetText(pauseTime, index, 4)
+  LV_GetText(delay, index, 5)
+  LV_GetText(masked, index, 6)
+  LV_GetText(fake, index, 7)
+  LV_GetText(imagePath, index, 8)
+
+  LV_Add(, order, name, probability, pauseTime, delay, masked, fake, imagePath)
+}
+
 Swap(index1, index2)
 {
   LV_GetText(order1, index1, 1)
   LV_GetText(name1, index1, 2)
-  LV_GetText(probabillty1, index1, 3)
+  LV_GetText(probability1, index1, 3)
   LV_GetText(pauseTime1, index1, 4)
   LV_GetText(delay1, index1, 5)
   LV_GetText(masked1, index1, 6)
@@ -292,15 +316,15 @@ Swap(index1, index2)
 
   LV_GetText(order2, index2, 1)
   LV_GetText(name2, index2, 2)
-  LV_GetText(probabillty2, index2, 3)
+  LV_GetText(probability2, index2, 3)
   LV_GetText(pauseTime2, index2, 4)
   LV_GetText(delay2, index2, 5)
   LV_GetText(masked2, index2, 6)
   LV_GetText(fake2, index2, 7)
   LV_GetText(imagePath2, index2, 8)
 
-  LV_Modify(index1, , order1, name2, probabillty2, pauseTime2, delay2, masked2, fake2, imagePath2)
-  LV_Modify(index2, , order2, name1, probabillty1, pauseTime1, delay1, masked1, fake1, imagePath1)
+  LV_Modify(index1, , order1, name2, probability2, pauseTime2, delay2, masked2, fake2, imagePath2)
+  LV_Modify(index2, , order2, name1, probability1, pauseTime1, delay1, masked1, fake1, imagePath1)
 }
 
 ShowSplitWindow()
