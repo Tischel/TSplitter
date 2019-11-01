@@ -1,9 +1,10 @@
 #SingleInstance force
 
-Version := "0.2.0"
+Version := "0.2.1"
 SetFormat, float, 0.0
 
 ; Split window variables
+SplitImagePicture :=
 SplitImagePathTextfield :=
 SplitNameTextfield :=
 SplitProbabilityTextfield :=
@@ -294,6 +295,9 @@ Swap(index1, index2)
 
 ShowSplitWindow()
 {
+  Gui, 2:Destroy
+  Gui, 1:Default
+
   order := 
   imagePath := 
   name := 
@@ -303,7 +307,9 @@ ShowSplitWindow()
   masked := false
   fake := false
 
-  if (SelectedSplitIndex > 0) 
+  rowCount := LV_GetCount()
+
+  if (SelectedSplitIndex > 0)
   {
     LV_GetText(order, SelectedSplitIndex, 1)
     LV_GetText(name, SelectedSplitIndex, 2)
@@ -321,30 +327,44 @@ ShowSplitWindow()
   }
 
   title := (SelectedSplitIndex > 0 ? "Edit split #"order : "New Split")
-  Gui, 2:New, +Owner -Resize, %title%
-  Gui, 2:Add, Text, y20, Image path:
-  Gui, 2:Add, Edit, x80 y5 w277 h40 vSplitImagePathTextfield, %imagePath%
-  Gui, 2:Add, Button, x+-1 y4 w30 h42 gSelectImage, ...
+  Gui, 2:New, +Owner +Resize, %title%
 
-  Gui, 2:Add, Text, x10 y54, Split name:
-  Gui, 2:Add, Edit, x80 y50 w305 vSplitNameTextfield, %name%
+  if (imagePath) {
+    Gui, 2:Add, Picture, x50 y10 w300 h-1 vSplitImagePicture, %imagePath%
+  }
+  Gui, 2:Add, Text, x10 y+20, Image path:
+  Gui, 2:Add, Edit, x80 y+-25 w277 h40 vSplitImagePathTextfield, %imagePath%
+  Gui, 2:Add, Button, x+-1 y+-41 w30 h42 gSelectImage, ...
 
-  Gui, 2:Add, Text, x10 y85, Probability:
-  Gui, 2:Add, Edit, x70 y81 w50 vSplitProbabilityTextfield Limit3 Number, %probabillty%
+  Gui, 2:Add, Text, x10 y+10, Split name:
+  Gui, 2:Add, Edit, x80 y+-14 w305 vSplitNameTextfield, %name%
+
+  Gui, 2:Add, Text, x10 y+20, Probability:
+  Gui, 2:Add, Edit, x70 y+-15 w50 vSplitProbabilityTextfield Limit3 Number, %probabillty%
   Gui, 2:Add, UpDown, 0x80 Range1-100, %probabillty%
 
-  Gui, 2:Add, Text, x140 y85, Pause time:
-  Gui, 2:Add, Edit, x205 y81 w60 vSplitPauseTimeTextfield Limit4 Number, %pauseTime%
+  Gui, 2:Add, Text, x140 y+-19, Pause time:
+  Gui, 2:Add, Edit, x205 y+-15 w60 vSplitPauseTimeTextfield Limit4 Number, %pauseTime%
   Gui, 2:Add, UpDown, 0x80 Range0-9999, %pauseTime%
 
-  Gui, 2:Add, Text, x285 y85, Delay:
-  Gui, 2:Add, Edit, x325 y81 w60 vSplitDelayTextfield Limit5 Number, %delay%
+  Gui, 2:Add, Text, x285 y+-19, Delay:
+  Gui, 2:Add, Edit, x325 y+-15 w60 vSplitDelayTextfield Limit5 Number, %delay%
   Gui, 2:Add, UpDown, 0x80 Range0-99999, %delay%
 
-  Gui, 2:Add, CheckBox, x100 y115 vSplitMaskedCheck Checked%masked%, Masked image
-  Gui, 2:Add, CheckBox, x220 y115 vSplitFakeCheck Checked%fake%, Fake split
+  Gui, 2:Add, CheckBox, x100 y+20 vSplitMaskedCheck Checked%masked%, Masked image
+  Gui, 2:Add, CheckBox, x220 y+-12 vSplitFakeCheck Checked%fake%, Fake split
   
-  Gui, 2:Add, Button, x10 y150 w377 h30 gSaveEditedSplit, Save
+  Gui, 2:Add, Button, x100 y+30 w200 h30 gSaveEditedSplit, Save
+
+  if (SelectedSplitIndex > 1)
+  {
+    Gui, 2:Add, Button, x10 y+-30 w30 h30 gEditPreviousSplit, <
+  }
+
+  if (SelectedSplitIndex > 0 and SelectedSplitIndex < rowCount)
+  {
+    Gui, 2:Add, Button, x355 y+-30 w30 h30 gEditNextSplit, >
+  }
 
   Gui, 2:Show
 }
@@ -361,52 +381,63 @@ SelectImage:
   GuiControlGet, imagePath, , SplitImagePathTextfield
   FileSelectFile, imagePath, ,%imagePath%, Select splt image, PNG Images (*.png)
   GuiControl, , SplitImagePathTextfield, %imagePath%
+  GuiControl, , SplitImagePicture, %imagePath%
+Return
+
+EditPreviousSplit:
+  SelectedSplitIndex := SelectedSplitIndex - 1
+  ShowSplitWindow()
+Return
+
+EditNextSplit:
+  SelectedSplitIndex := SelectedSplitIndex + 1
+  ShowSplitWindow()
 Return
 
 SaveEditedSplit:
-; validate name
-GuiControlGet, name, , SplitNameTextfield
-if (!name or name = "") {
-  MsgBox, Invalid split name!
-  Return
-}
+  ; validate name
+  GuiControlGet, name, , SplitNameTextfield
+  if (!name or name = "") {
+    MsgBox, Invalid split name!
+    Return
+  }
 
-; validate path
-GuiControlGet, imagePath, , SplitImagePathTextfield
-IfNotExist, %imagePath%
-{
-  MsgBox, Couldn't find an image at "%imagePath%"!
-  Return
-}
+  ; validate path
+  GuiControlGet, imagePath, , SplitImagePathTextfield
+  IfNotExist, %imagePath%
+  {
+    MsgBox, Couldn't find an image at "%imagePath%"!
+    Return
+  }
 
-IfNotInString, imagePath, .png
-{
-  MsgBox, Only PNG images accepted!
-  Return
-}
+  IfNotInString, imagePath, .png
+  {
+    MsgBox, Only PNG images accepted!
+    Return
+  }
 
-; get values
-GuiControlGet, probabillty, , SplitProbabilityTextfield
-GuiControlGet, pauseTime, , SplitPauseTimeTextfield
-GuiControlGet, delay, , SplitDelayTextfield
-GuiControlGet, masked, , SplitMaskedCheck
-maskedText := (masked = 1 ? "Yes" : "No")
-GuiControlGet, fake, , SplitFakeCheck
-fakeText := (fake = 1 ? "Yes" : "No")
+  ; get values
+  GuiControlGet, probabillty, , SplitProbabilityTextfield
+  GuiControlGet, pauseTime, , SplitPauseTimeTextfield
+  GuiControlGet, delay, , SplitDelayTextfield
+  GuiControlGet, masked, , SplitMaskedCheck
+  maskedText := (masked = 1 ? "Yes" : "No")
+  GuiControlGet, fake, , SplitFakeCheck
+  fakeText := (fake = 1 ? "Yes" : "No")
 
-Gui, 2:Destroy
-Gui, 1:Default
+  Gui, 2:Destroy
+  Gui, 1:Default
 
-; save
-if (SelectedSplitIndex = -1)
-{
-  rowCount := LV_GetCount() + 1
-  LV_Add(, rowCount, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
-}
-else
-{
-  LV_Modify(SelectedSplitIndex, , SelectedSplitIndex, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
-}
+  ; save
+  if (SelectedSplitIndex = -1)
+  {
+    rowCount := LV_GetCount() + 1
+    LV_Add(, rowCount, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
+  }
+  else
+  {
+    LV_Modify(SelectedSplitIndex, , SelectedSplitIndex, name, probabillty, pauseTime, delay, maskedText, fakeText, imagePath)
+  }
 
 Return
 

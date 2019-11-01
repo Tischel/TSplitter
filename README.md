@@ -1,4 +1,4 @@
-# TSplitter v0.2.0
+# TSplitter v0.2.1
 A tool that adds some features to https://github.com/Toufool/Auto-Split used in conjuction with https://github.com/LiveSplit
 You need AutoHotkey to use this program (Download from https://www.autohotkey.com/)
 
