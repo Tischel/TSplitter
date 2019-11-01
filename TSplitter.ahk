@@ -1,6 +1,6 @@
 #SingleInstance force
 
-Version := "0.2.1"
+Version := "0.2.2"
 
 ; Read saved key binds
 IniRead, AutosplitSplit, TSplitter.ini, AutoSplit, Split

@@ -1,6 +1,6 @@
 #SingleInstance force
 
-Version := "0.2.1"
+Version := "0.2.2"
 SetFormat, float, 0.0
 
 ; Split window variables
